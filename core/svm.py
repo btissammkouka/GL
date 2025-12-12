@@ -49,4 +49,3 @@ class SVMModel(BaseModel):
     def get_n_support(self):
         self._validate_fitted()
         return self.model.n_support_
-
