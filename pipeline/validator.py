@@ -1,7 +1,7 @@
 import os
 import joblib
 import numpy as np
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report, roc_auc_score
 from typing import Union, Optional, Dict, Any
 from core.base_model import BaseModel
 from core.dataset import RespiratoryInfectionDataset
@@ -80,6 +80,13 @@ class Validator:
             'confusion_matrix': confusion_matrix(y, predictions).tolist(),
         }
         
+        try:
+            probabilities = self.predict_proba(X)
+            # Use probability of positive class (index 1)
+            metrics['roc_auc'] = roc_auc_score(y, probabilities[:, 1])
+        except (NotImplementedError, ValueError):
+            metrics['roc_auc'] = None
+        
         if verbose:
             self._print_metrics(metrics, y, predictions)
         
@@ -155,7 +162,10 @@ class Validator:
         print(f"\nAccuracy:  {metrics['accuracy']:.4f}")
         print(f"Precision: {metrics['precision']:.4f}")
         print(f"Recall:    {metrics['recall']:.4f}")
+        print(f"Recall:    {metrics['recall']:.4f}")
         print(f"F1 Score:  {metrics['f1_score']:.4f}")
+        if metrics.get('roc_auc') is not None:
+            print(f"ROC AUC:   {metrics['roc_auc']:.4f}")
         
         print(f"\nConfusion Matrix:")
         cm = np.array(metrics['confusion_matrix'])
