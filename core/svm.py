@@ -4,6 +4,9 @@ from .base_model import BaseModel
 
 
 class SVMModel(BaseModel):
+    """
+    Support Vector Machine model implementation.
+    """
     
     def __init__(self, C=1.0, kernel='rbf', gamma='scale', random_state=42, **kwargs):
         super().__init__()
